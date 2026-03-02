@@ -187,7 +187,7 @@ maximumWithMax' [x] = x
 maximumWithMax' (x:xs) = max x (maximumWithMax' xs) -- find the max of the head of the list, and all subheads of the list 
 
 -- a recreation of the replicate function
-rep' :: (Num i, Ord i) => i -> a -> [a]
+rep' :: (Num i, Ord i) => i -> a -> [a] -- rep has the following type: takes i as input which is an ord and a num, and some single value of type a, then returns a list full of that type of thing
 rep' n x 
   | n <= 0 = []
   | otherwise = x:rep' (n-1) x
@@ -198,3 +198,60 @@ take' n _                                  -- take input with a number less then
   | n <= 0 = [] 
 take' _ [] = []                            -- empty list with any number returns an empty list 
 take' n (x:xs) = x:take' (n-1) xs          -- take some number, and the head of a list with the rest of the list.  return the head concat with takes head n times
+
+-- reverse a list
+rev' :: [a] -> [a] -- some list of things, then reverses that list of things:w
+rev' [] = []       -- empty list case
+rev' (x:xs) = rev' xs ++ [x] 
+
+-- inf repete of a list, will never stop
+repeat' :: a -> [a]
+repeat' x = x:repeat' x
+
+-- take' 3 (repeat' 4) is the same as replicate 3 4 (lazy eval!)
+
+-- zip function implimented
+zip' :: [a] -> [b] -> [(a,b)]
+zip' _ [] = []
+zip' [] _ = []
+zip' (x:xs) (y:ys) = (x,y):(zip' xs ys)
+
+-- elem 
+elem'::(Eq a) => a -> [a] -> Bool
+elem' _ [] = False
+elem' a (x:xs)
+  | a == x = True
+  | otherwise = a `elem'` xs 
+
+-- quicksort! NOTE: How do we know that this is in place? -> it is not.
+quicksort :: (Ord a) => [a] -> [a] -- takes some type that can be ordered in a list, and returns a list 
+quicksort [] = []                  -- empty list is already sorted
+quicksort (x:xs) = 
+    let smallerSorted = quicksort [a | a <- xs, a <= x]  -- set from everything expect the head, only if <= then head 
+        biggerSorted = quicksort [a | a <- xs, a > x]    -- set from everything expect the head, only if >
+    in  smallerSorted ++ [x] ++ biggerSorted             -- smaller concat with head concat with the bigger elements
+
+qs' :: (Ord a) => [a] -> [a]
+qs' [] = []
+qs' (x:xs) = qs' small ++ med ++ qs' large
+  where small  = [y | y <- xs, y < x]
+        med    = [y | y <- xs, y == x] ++ [x] -- if we don't concat x, then we will not include x in the found elements (as xs does not include x)
+	large  = [y | y <- xs, y > x]
+
+-- trying to understand currying 
+add1 x y = x + y -- either this or add2 work
+add2 x y = y + x -- either this or add1 work
+addOne = add1 1  -- addOne 1, is really ((addOne) 1), which will be evaled to ((add1 1) 1)
+
+-- note that all haskall functions only take one input.
+
+divideByTen = (/10) -- infix function can be particallly applied with surrounding ()
+
+isUpperAlpha :: Char -> Bool
+isUpperAlpha = (`elem` ['A'..'Z'])
+
+applyTwice :: (a -> a) -> a -> a -- first parameter is a function that returns the same type of thing, and then
+applyTwice f x = f (f x)
+-- Try: applyTwice (++ "Hey") "Haha"
+--      applyTwice ("Hey" ++) "Haha"
+--      applyTwice (3:) [1]  
