@@ -133,16 +133,68 @@ a `myCompare` b
 
 densityTell :: (RealFloat a) => a -> a -> String  
 densityTell mass volume  
-    | density < 1.2 = "Wow! You're going for a ride in the sky!"  
-    | density <= 1000.0 = "Have fun swimming, but watch out for sharks!"  
-    | otherwise   = "If it's sink or swim, you're going to sink."  
-    where density = mass / volume  -- defines density in the above guard clause to be mass / volumne.  We could define multiple things
-
-densityTell :: (RealFloat a) => a -> a -> String  
-densityTell mass volume  
     | density < air = "Wow! You're going for a ride in the sky!"  
     | density <= water = "Have fun swimming, but watch out for sharks!"  
     | otherwise   = "If it's sink or swim, you're going to sink."  
     where density = mass / volume  
           air = 1.2  
           water = 1000.0  
+
+-- let bindings are like the where statements, but they are more local, so no going across guard clauses (or other langauge constructs that are not expressions).  This is because they are expressions NOT syntax elements
+
+
+-- CASE EXPRESSION --
+--head' :: [a] -> a  
+--head' xs = case xs of [] -> error "No head for empty lists!"  
+--                      (x:_) -> x  
+-- the above is the same as the below
+-- head' :: [a] -> a  
+-- head' [] = error "No head for empty lists!"  
+-- head' (x:_) = x  
+
+-- case expression of pattern -> result  
+--                    pattern -> result  
+--                    pattern -> result  
+--                    ...  
+--
+
+-- case of can be used anywhere!
+
+describeList :: [a] -> String  
+describeList xs = "The list is " ++ case xs of [] -> "empty."  
+                                               [x] -> "a singleton list."  
+                                               xs -> "a longer list."  
+-- note that this is the same as 
+describeList' :: [a] -> String  
+describeList' xs = "The list is " ++ what xs  
+    where what [] = "empty."  
+          what [x] = "a singleton list."  
+          what xs = "a longer list."  
+
+-- implimation of maximum using 
+maximum' :: (Ord a) => [a] -> a  -- elements must be able to be ordered
+maximum' [] = error "maximum of empty list"  -- empty list has no max
+maximum' [x] = x  -- a list with one element will have that one element be its max
+maximum' (x:xs)   -- pattern match a list into first element 'x' and rest of the list 'xs'
+    | x > maxTail = x  -- if the first element is greater then the max of the tail, then x is the max
+    | otherwise = maxTail  -- always evals to TRUE
+    where maxTail = maximum' xs  -- the max of the rest of the list
+
+-- another way of writing the above function
+maximumWithMax' :: (Ord a) => [a] -> a
+maximumWithMax' [] = error "maximum of an empty list"
+maximumWithMax' [x] = x
+maximumWithMax' (x:xs) = max x (maximumWithMax' xs) -- find the max of the head of the list, and all subheads of the list 
+
+-- a recreation of the replicate function
+rep' :: (Num i, Ord i) => i -> a -> [a]
+rep' n x 
+  | n <= 0 = []
+  | otherwise = x:rep' (n-1) x
+
+
+take' :: (Num i, Ord i) => i -> [a] -> [a] -- take has the following type: takes as input i, being of the typeclasses Num and Ord, and a list, and returns a list of type a 
+take' n _                                  -- take input with a number less then 0 and with anything else, will be an empty list
+  | n <= 0 = [] 
+take' _ [] = []                            -- empty list with any number returns an empty list 
+take' n (x:xs) = x:take' (n-1) xs          -- take some number, and the head of a list with the rest of the list.  return the head concat with takes head n times
