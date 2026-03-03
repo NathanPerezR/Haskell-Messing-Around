@@ -254,4 +254,31 @@ applyTwice :: (a -> a) -> a -> a -- first parameter is a function that returns t
 applyTwice f x = f (f x)
 -- Try: applyTwice (++ "Hey") "Haha"
 --      applyTwice ("Hey" ++) "Haha"
---      applyTwice (3:) [1]  
+--applyTwice (3:) [1]  
+
+-- zips with any function
+zipwith' :: (a -> b -> c) -> [a] -> [b] -> [c]
+zipwith' _ _ [] = []
+zipwith' _ [] _ = []
+zipwith' f (x:xs) (y:ys) = (f x y):(zipwith' f xs ys) -- make a list with  the elements from x list and y list, with function applied between them.
+
+-- implimation of the flip function
+flip' :: (a  -> b -> c) -> b -> a -> c -- NOTE: why do we not have the function notated with f
+flip' f x y = f y x 
+
+-- implimation of map
+map' :: (a -> b) -> [a] -> [b]
+map' _ [] = []
+map' f (x:xs) = f x : map' f xs
+
+-- implimation of filter
+filter' :: (a -> Bool) -> [a] -> [a]
+filter' _ [] = []
+filter' f xs = [x | x <- xs, f x == True]
+
+-- could also be done as follows 
+-- filter :: (a -> Bool) -> [a] -> [a]  
+-- filter _ [] = []  
+-- filter p (x:xs)  
+--     | p x       = x : filter p xs  
+--     | otherwise = filter p xs  
