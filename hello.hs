@@ -282,3 +282,18 @@ filter' f xs = [x | x <- xs, f x == True]
 -- filter p (x:xs)  
 --     | p x       = x : filter p xs  
 --     | otherwise = filter p xs  
+
+-- Lambdas --
+-- : When to prefer over partical application via currying
+
+--  
+-- if pattern matching fails in lambda, error will occur
+
+sumWithFoldLam :: (Num a) => [a] -> a
+sumWithFoldLam xs = foldl (\acc x -> acc + x) 0 xs
+
+-- again with foldl
+-- foldl takes some function, some start value, and a list and then applies function to each element of the list, including the result of the first sum in other sums
+-- (...((0 + 1) + 2) ... )
+sumWithFoldl :: (Num a ) => [a] -> a
+sumWithFoldl xs = foldl (+) 0 xs
