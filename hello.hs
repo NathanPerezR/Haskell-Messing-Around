@@ -297,3 +297,34 @@ sumWithFoldLam xs = foldl (\acc x -> acc + x) 0 xs
 -- (...((0 + 1) + 2) ... )
 sumWithFoldl :: (Num a ) => [a] -> a
 sumWithFoldl xs = foldl (+) 0 xs
+
+-- elem with foldl
+accWithFoldl :: (Eq a) => a -> [a] -> Bool
+accWithFoldl y ys =  foldl (\acc x -> if x == y then True else acc) False ys
+
+mapWithAcc :: (a -> b) -> [a] -> [b]
+mapWithAcc f xs = foldr (\x acc -> f x : acc) [] xs  -- with left fold we would have had to use ++ instead of :, ++ is more expesnive then :
+
+-- Folds are best when you traverse a list once, and return something based on that - very useful!
+
+maximumWithFold' :: (Ord a) => [a] -> a  
+maximumWithFold' = foldr1 (\x acc -> if x > acc then x else acc)
+  
+reverseWithFold' :: [a] -> [a]  
+reverseWithFold' = foldl (\acc x -> x : acc) [] -- take starting value of empty list, prepend to the accumulator 
+  
+productWithFold' :: (Num a) => [a] -> a  
+productWithFold' = foldr1 (*)  -- foldr1 is a right fold with starting val being the first value on the right
+  
+filterWithFold' :: (a -> Bool) -> [a] -> [a]  
+filterWithFold' p = foldr (\x acc -> if p x then x : acc else acc) [] -- acc is a list containing the values if p x evals to true
+  
+headWithFold' :: [a] -> a  
+headWithFold' = foldr1 (\x _ -> x)  
+  
+lastWithFold' :: [a] -> a  
+lastWithFold' = foldl1 (\_ x -> x)  
+
+-- scanl: like fold but shows the inbetween results
+scanl (+) 0 [1,2..10] -- == [0,1,3,6,10,15,21,28,36,45,55]
+foldl (+) 0 [1,2..10] -- == 55
